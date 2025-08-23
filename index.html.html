@@ -1,4 +1,161 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>t1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #16162b 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .document-container {
+            background-color: white;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin: 40px auto;
+        }
+        
+        .document-header {
+            background: linear-gradient(90deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .document-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .document-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .document-content {
+            padding: 40px;
+        }
+        
+        .document-content * {
+            max-width: 100%;
+        }
+        
+        .document-content h1, 
+        .document-content h2, 
+        .document-content h3, 
+        .document-content h4, 
+        .document-content h5, 
+        .document-content h6 {
+            color: #4361ee;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            text-align: center;
+        }
+        
+        .document-content p {
+            margin-bottom: 1.2em;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .document-content img {
+            display: block;
+            margin: 2em auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-content iframe {
+            display: block;
+            margin: 2em auto;
+            max-width: 100%;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-content video {
+            display: block;
+            margin: 2em auto;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .document-container {
+                border-radius: 10px;
+                margin: 20px auto;
+            }
+            
+            .document-header {
+                padding: 20px;
+            }
+            
+            .document-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .document-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="document-container">
+        <div class="document-header">
+            <h1>t1</h1>
+            <p>Documento creado con Editor Visual Web Futurista</p>
+        </div>
+        
+        <div class="document-content">
+            
+            
                     <!-- Aquí se agregarán los elementos editables -->
-                    <div class="editable" style="text-align: center; color: rgb(76, 61, 61); font-family: Montserrat; font-size: 32px; pointer-events: none;">OXXOMAXTRADING</div>
-                <div class="editable" style="margin: 10px 0px; color: rgb(30, 21, 21); font-family: Montserrat; font-size: 24px; width: 350px; height: 390px; pointer-events: none;">El camino del trading no es fácil, pero sí es posible. Cada gran trader empezó con una sola decisión: atreverse a dar el primer paso. No se trata de adivinar el futuro, sino de aprender a interpretar el mercado, a controlar las emociones y a ser constante en la disciplina.</div><div class="editable selected" style="margin: 10px 0px; width: 789px; left: -20px; top: 185px; color: rgb(18, 18, 18); font-family: Verdana; pointer-events: none;">No importa cuánto capital tengas hoy, lo que realmente importa es tu mentalidad: paciencia, constancia y confianza en ti mismo. El mercado siempre ofrecerá oportunidades, pero solo los que están preparados las pueden aprovechar.  Recuerda: el mejor momento para empezar fue ayer, el segundo mejor es hoy. Levántate con determinación, estudia con pasión y opera con disciplina. Tu yo del futuro te lo agradecerá.</div><div class="editable selected" style="margin: 10px 0px; color: rgb(0, 0, 0); font-family: Verdana; font-size: 16px; width: 500px; height: 150px; left: 160px; top: -163px; text-align: center; pointer-events: none;">El trading no premia a los que se rinden rápido, sino a los que persisten, estudian y mejoran día tras día. Cada error es una lección, y cada acierto es una señal de que estás más cerca de tus metas.</div><iframe class="editable" width="352" height="315" src="https://www.youtube.com/embed/NwTlUxtb0vo" frameborder="0" allowfullscreen="" style="margin: 10px 0px; left: 373px; top: -706px; pointer-events: none;"><div class="resize-handle nw"></div><div class="resize-handle ne"></div><div class="resize-handle sw"></div><div class="resize-handle se"></div></iframe>
+                    <div class="editable" style="text-align: center; color: rgb(34, 32, 32); font-size: 24px; pointer-events: none;">OXOMAX TRADING</div>
+                <div class="editable" style="margin: 10px 0px; color: rgb(19, 17, 17); pointer-events: none;">1. La ignorancia cuesta más que la educación El que no estudia, paga. La bolsa no perdona la improvisación. Si no te educas, no estás invirtiendo: estás jugando a la ruleta. Los que creen que saben, pero no leen, no practican y no se forman, son los primeros en perder.</div><div class="editable" style="margin: 10px 0px; color: rgb(45, 42, 42); pointer-events: none;">2. El miedo es tu mayor enemigo y tu mejor maestro Sentir miedo en la bolsa es normal. Si no lo sientes, no eres humano. Pero si dejas que ese miedo decida por ti, estás muerto como trader. El 90% fracasa porque no sabe controlar sus emociones. La diferencia no está en la estrategia, está en la mente.</div><div class="editable selected" style="margin: 10px 0px; color: rgb(23, 22, 22); pointer-events: none;">3. La disciplina vence al talento Muchos llegan con sueños de hacerse ricos rápido. La mayoría se rompe, porque no entienden que el trading no es velocidad, es resistencia. No gana el más listo, gana el más disciplinado, el que puede seguir su plan incluso cuando todo su cuerpo le grita lo contrario.</div><div class="editable selected" style="margin: 10px 0px; color: rgb(53, 49, 49); pointer-events: none;">4. La comodidad es la mayor trampa Si eliges lo fácil, te espera lo difícil: deudas, frustración, arrepentimiento. Si eliges lo difícil —estudiar, practicar, sacrificar horas de placer por horas de aprendizaje—, la vida después será más fácil.</div>
+        
+        </div>
+        
+        <div class="document-footer">
+            <p>© 2025 - Creado con Editor Visual Web Futurista</p>
+        </div>
+    </div>
+</body>
+</html>
