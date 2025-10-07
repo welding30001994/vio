@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jayden Company - Sistema de Análisis Técnico</title>
+    <title>Jayden Company - Sistema de Trading Profesional</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@1.1.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1"></script>
     <style>
         :root {
-            --primary-color: #1e2a3a;
-            --secondary-color: #2d3e50;
-            --accent-color: #3498db;
-            --text-color: #ecf0f1;
-            --profit-color: #2ecc71;
-            --loss-color: #e74c3c;
+            --primary-color: #0f172a;
+            --secondary-color: #1e293b;
+            --accent-color: #3b82f6;
+            --text-color: #f1f5f9;
+            --profit-color: #22c55e;
+            --loss-color: #ef4444;
+            --grid-color: #334155;
         }
         
         * {
@@ -27,10 +29,11 @@
             background-color: var(--primary-color);
             color: var(--text-color);
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -40,7 +43,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid var(--secondary-color);
+            border-bottom: 1px solid var(--grid-color);
             margin-bottom: 20px;
         }
         
@@ -51,12 +54,26 @@
         }
         
         .logo h1 {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .price-ticker {
+            display: flex;
+            gap: 30px;
+            font-size: 18px;
             font-weight: 600;
         }
         
-        .logo span {
-            color: var(--accent-color);
+        .price-up {
+            color: var(--profit-color);
+        }
+        
+        .price-down {
+            color: var(--loss-color);
         }
         
         .controls {
@@ -64,6 +81,7 @@
             gap: 15px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            align-items: center;
         }
         
         select, button {
@@ -71,14 +89,15 @@
             background-color: var(--secondary-color);
             color: var(--text-color);
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            border: 1px solid var(--grid-color);
         }
         
         select:hover, button:hover {
-            background-color: #3a4d63;
+            background-color: #2d3748;
         }
         
         button.active {
@@ -87,42 +106,47 @@
         
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 350px;
             gap: 20px;
         }
         
         .chart-container {
             background-color: var(--secondary-color);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             position: relative;
             height: 600px;
+            border: 1px solid var(--grid-color);
         }
         
         .info-panel {
             background-color: var(--secondary-color);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
             max-height: 600px;
+            border: 1px solid var(--grid-color);
         }
         
         .info-panel h2 {
             margin-bottom: 15px;
             color: var(--accent-color);
-            font-size: 20px;
+            font-size: 22px;
+            border-bottom: 1px solid var(--grid-color);
+            padding-bottom: 10px;
         }
         
         .formula {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin: 15px 0;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.8;
+            border-left: 4px solid var(--accent-color);
         }
         
         .audio-controls {
@@ -131,13 +155,15 @@
             gap: 10px;
             margin-top: 20px;
             padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--grid-color);
         }
         
         .audio-controls button {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
         }
         
         .timeframe-selector {
@@ -161,7 +187,7 @@
         .indicator-params input {
             padding: 8px;
             background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--grid-color);
             border-radius: 4px;
             color: var(--text-color);
         }
@@ -170,12 +196,25 @@
             margin-top: 30px;
             text-align: center;
             padding: 15px;
-            border-top: 1px solid var(--secondary-color);
+            border-top: 1px solid var(--grid-color);
             font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
         }
         
-        @media (max-width: 1024px) {
+        .video-container {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        @media (max-width: 1200px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
@@ -184,25 +223,54 @@
                 max-height: 400px;
             }
         }
+        
+        .indicator-signal {
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .signal-buy {
+            background-color: rgba(34, 197, 94, 0.2);
+            border: 1px solid var(--profit-color);
+            color: var(--profit-color);
+        }
+        
+        .signal-sell {
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--loss-color);
+            color: var(--loss-color);
+        }
+        
+        .signal-neutral {
+            background-color: rgba(100, 116, 139, 0.2);
+            border: 1px solid #64748b;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo">
-                <h1>JAYDEN <span>COMPANY</span></h1>
+                <h1>JAYDEN COMPANY TRADING</h1>
             </div>
-            <div>
-                <select id="assetSelector">
-                    <option value="BTC">Bitcoin (BTC/USD)</option>
-                    <option value="ETH">Ethereum (ETH/USD)</option>
-                    <option value="AAPL">Apple (AAPL)</option>
-                    <option value="SPY">S&P 500 (SPY)</option>
-                </select>
+            <div class="price-ticker">
+                <div>EUR/USD: <span id="eurusdPrice" class="price-up">1.08542</span></div>
+                <div>GBP/USD: <span class="price-down">1.26789</span></div>
+                <div>USD/JPY: <span class="price-up">151.234</span></div>
             </div>
         </header>
         
         <div class="controls">
+            <select id="assetSelector">
+                <option value="EURUSD">EUR/USD</option>
+                <option value="GBPUSD">GBP/USD</option>
+                <option value="USDJPY">USD/JPY</option>
+                <option value="XAUUSD">XAU/USD (Oro)</option>
+            </select>
+            
             <select id="indicatorSelector">
                 <option value="none">Sin Indicador</option>
                 <option value="sma">Media Móvil Simple (SMA)</option>
@@ -218,11 +286,12 @@
             </select>
             
             <div class="timeframe-selector">
-                <button class="timeframe-btn active" data-timeframe="1d">1D</button>
-                <button class="timeframe-btn" data-timeframe="1w">1S</button>
-                <button class="timeframe-btn" data-timeframe="1M">1M</button>
-                <button class="timeframe-btn" data-timeframe="3M">3M</button>
-                <button class="timeframe-btn" data-timeframe="1y">1A</button>
+                <button class="timeframe-btn active" data-timeframe="1">1 min</button>
+                <button class="timeframe-btn" data-timeframe="5">5 min</button>
+                <button class="timeframe-btn" data-timeframe="15">15 min</button>
+                <button class="timeframe-btn" data-timeframe="60">1 h</button>
+                <button class="timeframe-btn" data-timeframe="240">4 h</button>
+                <button class="timeframe-btn" data-timeframe="D">1 D</button>
             </div>
             
             <button id="playPauseBtn">▶ Reproducir Explicación</button>
@@ -244,68 +313,192 @@
                 <div id="indicatorParams" class="indicator-params" style="display: none;">
                     <!-- Los parámetros se insertarán aquí dinámicamente -->
                 </div>
+                <div id="indicatorSignal" class="indicator-signal" style="display: none;">
+                    <!-- Señal de trading se insertará aquí -->
+                </div>
                 <div class="audio-controls">
                     <button id="audioControl">🔊 Reproducir Explicación</button>
-                    <span id="audioStatus">Listo</span>
+                    <span id="audioStatus">Listo para reproducir</span>
+                </div>
+                
+                <div class="video-container">
+                    <div style="padding: 20px; text-align: center; background: #1e293b;">
+                        <p>🎥 Video explicativo del indicador</p>
+                        <p style="font-size: 12px; margin-top: 10px; color: #94a3b8;">En una versión completa, aquí se mostraría un video tutorial</p>
+                    </div>
                 </div>
             </div>
         </div>
         
         <footer>
             <p>Jayden Company - Sistema de Análisis Técnico Profesional | © 2023 Todos los derechos reservados</p>
+            <p style="margin-top: 10px; font-size: 12px;">ADVERTENCIA: El trading de divisas conlleva un alto nivel de riesgo y puede no ser adecuado para todos los inversores.</p>
         </footer>
     </div>
 
     <script>
-        // Datos de ejemplo para el gráfico
-        function generateSampleData(count = 100) {
+        // Datos de ejemplo para EUR/USD
+        function generateCandlestickData(count = 100) {
             const data = [];
-            let price = 100;
+            let time = new Date();
+            time.setMinutes(time.getMinutes() - count * 5);
+            
+            let open = 1.0850;
             
             for (let i = 0; i < count; i++) {
-                const change = (Math.random() - 0.5) * 4;
-                price += change;
+                time = new Date(time.getTime() + 5 * 60000);
                 
-                const open = price;
-                const high = open + Math.random() * 3;
-                const low = open - Math.random() * 3;
-                const close = low + Math.random() * (high - low);
+                const change = (Math.random() - 0.5) * 0.005;
+                const close = open + change;
+                const high = Math.max(open, close) + Math.random() * 0.002;
+                const low = Math.min(open, close) - Math.random() * 0.002;
                 
                 data.push({
-                    time: i,
-                    open: open,
-                    high: high,
-                    low: low,
-                    close: close
+                    x: time.getTime(),
+                    o: open,
+                    h: high,
+                    l: low,
+                    c: close,
+                    t: time
                 });
+                
+                open = close;
             }
             
             return data;
+        }
+
+        // Calcular SMA
+        function calculateSMA(data, period) {
+            const sma = [];
+            for (let i = period - 1; i < data.length; i++) {
+                let sum = 0;
+                for (let j = 0; j < period; j++) {
+                    sum += data[i - j].c;
+                }
+                sma.push({
+                    x: data[i].x,
+                    y: sum / period
+                });
+            }
+            return sma;
+        }
+
+        // Calcular EMA
+        function calculateEMA(data, period) {
+            const ema = [];
+            const multiplier = 2 / (period + 1);
+            
+            // Primer valor EMA es SMA
+            let sum = 0;
+            for (let i = 0; i < period; i++) {
+                sum += data[i].c;
+            }
+            ema.push({
+                x: data[period - 1].x,
+                y: sum / period
+            });
+
+            // Calcular EMA subsiguientes
+            for (let i = period; i < data.length; i++) {
+                const value = (data[i].c - ema[ema.length - 1].y) * multiplier + ema[ema.length - 1].y;
+                ema.push({
+                    x: data[i].x,
+                    y: value
+                });
+            }
+            return ema;
+        }
+
+        // Calcular RSI
+        function calculateRSI(data, period) {
+            const rsi = [];
+            const gains = [];
+            const losses = [];
+
+            // Calcular ganancias y pérdidas
+            for (let i = 1; i < data.length; i++) {
+                const change = data[i].c - data[i - 1].c;
+                gains.push(change > 0 ? change : 0);
+                losses.push(change < 0 ? Math.abs(change) : 0);
+            }
+
+            // Calcular RSI
+            for (let i = period; i < gains.length; i++) {
+                let avgGain = 0;
+                let avgLoss = 0;
+
+                for (let j = 0; j < period; j++) {
+                    avgGain += gains[i - j];
+                    avgLoss += losses[i - j];
+                }
+
+                avgGain /= period;
+                avgLoss /= period;
+
+                const rs = avgGain / avgLoss;
+                const rsiValue = 100 - (100 / (1 + rs));
+
+                rsi.push({
+                    x: data[i + 1].x,
+                    y: rsiValue
+                });
+            }
+            return rsi;
+        }
+
+        // Calcular Bandas de Bollinger
+        function calculateBollingerBands(data, period, stdDev) {
+            const bands = { upper: [], middle: [], lower: [] };
+            
+            for (let i = period - 1; i < data.length; i++) {
+                // Calcular SMA (banda media)
+                let sum = 0;
+                for (let j = 0; j < period; j++) {
+                    sum += data[i - j].c;
+                }
+                const sma = sum / period;
+
+                // Calcular desviación estándar
+                let variance = 0;
+                for (let j = 0; j < period; j++) {
+                    variance += Math.pow(data[i - j].c - sma, 2);
+                }
+                const std = Math.sqrt(variance / period);
+
+                bands.middle.push({ x: data[i].x, y: sma });
+                bands.upper.push({ x: data[i].x, y: sma + (std * stdDev) });
+                bands.lower.push({ x: data[i].x, y: sma - (std * stdDev) });
+            }
+            return bands;
         }
         
         // Configuración inicial del gráfico
         const ctx = document.getElementById('priceChart').getContext('2d');
         let priceChart;
-        
+        let currentIndicator = null;
+
         function initializeChart() {
-            const data = generateSampleData(50);
+            const data = generateCandlestickData(80);
             
+            // Configurar el gráfico financiero
             priceChart = new Chart(ctx, {
                 type: 'candlestick',
                 data: {
                     datasets: [{
-                        label: 'Precio',
+                        label: 'EUR/USD',
                         data: data,
                         color: {
-                            up: '#2ecc71',
-                            down: '#e74c3c',
-                            unchanged: '#95a5a6',
+                            up: 'rgba(34, 197, 94, 0.8)',
+                            down: 'rgba(239, 68, 68, 0.8)',
+                            unchanged: 'rgba(100, 116, 139, 0.8)',
                         },
                         borderColor: {
-                            up: '#2ecc71',
-                            down: '#e74c3c',
-                            unchanged: '#95a5a6',
+                            up: '#22c55e',
+                            down: '#ef4444',
+                            unchanged: '#64748b',
                         },
+                        borderWidth: 1,
                     }]
                 },
                 options: {
@@ -313,24 +506,140 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'linear',
-                            position: 'bottom'
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                displayFormats: {
+                                    minute: 'HH:mm'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(100, 116, 139, 0.2)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
                         },
                         y: {
-                            position: 'right'
+                            position: 'right',
+                            grid: {
+                                color: 'rgba(100, 116, 139, 0.2)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
                         }
                     },
                     plugins: {
                         legend: {
-                            display: false
+                            display: true,
+                            labels: {
+                                color: '#94a3b8'
+                            }
                         },
                         tooltip: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#f1f5f9',
+                            borderColor: '#334155',
+                            borderWidth: 1
                         }
                     }
                 }
             });
+        }
+
+        function updateChartWithIndicator(indicatorType, params) {
+            // Remover datasets anteriores de indicadores
+            priceChart.data.datasets = priceChart.data.datasets.filter(ds => 
+                ds.label === 'EUR/USD' || ds.label === 'Precio'
+            );
+
+            const candleData = priceChart.data.datasets[0].data;
+
+            switch(indicatorType) {
+                case 'sma':
+                    const smaData = calculateSMA(candleData, params.period);
+                    priceChart.data.datasets.push({
+                        label: `SMA(${params.period})`,
+                        data: smaData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        type: 'line'
+                    });
+                    break;
+
+                case 'ema':
+                    const emaData = calculateEMA(candleData, params.period);
+                    priceChart.data.datasets.push({
+                        label: `EMA(${params.period})`,
+                        data: emaData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        type: 'line'
+                    });
+                    break;
+
+                case 'rsi':
+                    const rsiData = calculateRSI(candleData, params.period);
+                    priceChart.data.datasets.push({
+                        label: `RSI(${params.period})`,
+                        data: rsiData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        type: 'line'
+                    });
+                    break;
+
+                case 'bollinger':
+                    const bbData = calculateBollingerBands(candleData, params.period, params.std);
+                    priceChart.data.datasets.push(
+                        {
+                            label: `BB Superior(${params.period})`,
+                            data: bbData.upper,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            tension: 0.1,
+                            type: 'line'
+                        },
+                        {
+                            label: `BB Media(${params.period})`,
+                            data: bbData.middle,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            tension: 0.1,
+                            type: 'line'
+                        },
+                        {
+                            label: `BB Inferior(${params.period})`,
+                            data: bbData.lower,
+                            borderColor: '#ec4899',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            tension: 0.1,
+                            type: 'line'
+                        }
+                    );
+                    break;
+            }
+
+            priceChart.update();
         }
         
         // Información de los indicadores
@@ -341,7 +650,8 @@
                 formula: "SMA = (Suma de precios de cierre durante n períodos) / n",
                 params: [
                     { name: "period", label: "Período", value: 20, min: 5, max: 200 }
-                ]
+                ],
+                signal: "Tendencia Alcista"
             },
             ema: {
                 title: "Media Móvil Exponencial (EMA)",
@@ -349,7 +659,8 @@
                 formula: "EMA = (Precio actual × (2 / (n + 1))) + (EMA anterior × (1 - (2 / (n + 1))))",
                 params: [
                     { name: "period", label: "Período", value: 20, min: 5, max: 200 }
-                ]
+                ],
+                signal: "Tendencia Alcista"
             },
             rsi: {
                 title: "RSI (Relative Strength Index)",
@@ -357,7 +668,8 @@
                 formula: "RSI = 100 - (100 / (1 + RS))\nRS = (Promedio de ganancias en n períodos) / (Promedio de pérdidas en n períodos)",
                 params: [
                     { name: "period", label: "Período", value: 14, min: 5, max: 50 }
-                ]
+                ],
+                signal: "Neutral"
             },
             macd: {
                 title: "MACD (Moving Average Convergence Divergence)",
@@ -367,7 +679,8 @@
                     { name: "fast", label: "EMA Rápida", value: 12, min: 5, max: 26 },
                     { name: "slow", label: "EMA Lenta", value: 26, min: 10, max: 50 },
                     { name: "signal", label: "Período Señal", value: 9, min: 5, max: 20 }
-                ]
+                ],
+                signal: "Señal de Compra"
             },
             bollinger: {
                 title: "Bandas de Bollinger",
@@ -376,7 +689,8 @@
                 params: [
                     { name: "period", label: "Período", value: 20, min: 10, max: 50 },
                     { name: "std", label: "Desviaciones", value: 2, min: 1, max: 3, step: 0.1 }
-                ]
+                ],
+                signal: "Volatilidad Alta"
             },
             stochastic: {
                 title: "Estocástico",
@@ -385,19 +699,22 @@
                 params: [
                     { name: "kPeriod", label: "Período %K", value: 14, min: 5, max: 30 },
                     { name: "dPeriod", label: "Período %D", value: 3, min: 1, max: 10 }
-                ]
+                ],
+                signal: "Sobrecompra"
             },
             fibonacci: {
                 title: "Retrocesos de Fibonacci",
                 description: "Los retrocesos de Fibonacci son niveles horizontales que indican donde se espera que el precio encuentre soporte o resistencia. Se basan en los ratios clave de la secuencia de Fibonacci: 23.6%, 38.2%, 50%, 61.8% y 78.6%.",
                 formula: "Nivel de Retroceso = Máximo - ((Máximo - Mínimo) × Ratio Fibonacci)",
-                params: []
+                params: [],
+                signal: "Soporte en 61.8%"
             },
             ichimoku: {
                 title: "Ichimoku Cloud",
                 description: "El Ichimoku Cloud es un indicador completo que proporciona información sobre soporte/resistencia, tendencia, momentum y señales de trading. Consiste en cinco líneas que forman una 'nube' (Kumo).",
                 formula: "Tenkan-sen = (Máximo alto(9) + Mínimo bajo(9)) / 2\nKijun-sen = (Máximo alto(26) + Mínimo bajo(26)) / 2\nSenkou Span A = (Tenkan-sen + Kijun-sen) / 2\nSenkou Span B = (Máximo alto(52) + Mínimo bajo(52)) / 2\nChikou Span = Precio de cierre desplazado 26 períodos atrás",
-                params: []
+                params: [],
+                signal: "Tendencia Alcista"
             },
             atr: {
                 title: "ATR (Average True Range)",
@@ -405,13 +722,15 @@
                 formula: "True Range = max(Alto - Bajo, |Alto - Cierre anterior|, |Bajo - Cierre anterior|)\nATR = Media móvil de True Range durante n períodos",
                 params: [
                     { name: "period", label: "Período", value: 14, min: 5, max: 50 }
-                ]
+                ],
+                signal: "Volatilidad Moderada"
             },
             pivot: {
                 title: "Pivot Points",
                 description: "Los Pivot Points son niveles de soporte y resistencia calculados a partir de los precios máximos, mínimos y de cierre del día anterior. Se utilizan principalmente para el trading intradía para identificar posibles niveles de reversión.",
                 formula: "Pivot Point (PP) = (Alto + Bajo + Cierre) / 3\nR1 = (2 × PP) - Bajo\nR2 = PP + (Alto - Bajo)\nS1 = (2 × PP) - Alto\nS2 = PP - (Alto - Bajo)",
-                params: []
+                params: [],
+                signal: "Resistencia en R1"
             }
         };
         
@@ -419,27 +738,64 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeChart();
             
+            // Simular cambio de precio en tiempo real
+            setInterval(() => {
+                const eurusdElement = document.getElementById('eurusdPrice');
+                const currentPrice = parseFloat(eurusdElement.textContent);
+                const change = (Math.random() - 0.5) * 0.0005;
+                const newPrice = currentPrice + change;
+                eurusdElement.textContent = newPrice.toFixed(5);
+                
+                if (change > 0) {
+                    eurusdElement.className = 'price-up';
+                } else {
+                    eurusdElement.className = 'price-down';
+                }
+            }, 2000);
+            
             // Manejo del selector de indicadores
             const indicatorSelector = document.getElementById('indicatorSelector');
             const indicatorTitle = document.getElementById('indicatorTitle');
             const indicatorDescription = document.getElementById('indicatorDescription');
             const indicatorFormula = document.getElementById('indicatorFormula');
             const indicatorParams = document.getElementById('indicatorParams');
+            const indicatorSignal = document.getElementById('indicatorSignal');
             
-            indicatorSelector.addEventListener('change', function() {
-                const selectedIndicator = this.value;
+            function applyIndicator() {
+                const selectedIndicator = indicatorSelector.value;
                 
                 if (selectedIndicator === 'none') {
                     indicatorTitle.textContent = 'Selecciona un Indicador';
                     indicatorDescription.innerHTML = '<p>Selecciona un indicador técnico del menú desplegable para ver su descripción, fórmula y aplicación en el gráfico.</p>';
                     indicatorFormula.style.display = 'none';
                     indicatorParams.style.display = 'none';
+                    indicatorSignal.style.display = 'none';
+                    
+                    // Remover todos los indicadores del gráfico
+                    priceChart.data.datasets = priceChart.data.datasets.filter(ds => 
+                        ds.label === 'EUR/USD' || ds.label === 'Precio'
+                    );
+                    priceChart.update();
                 } else {
                     const indicator = indicators[selectedIndicator];
                     indicatorTitle.textContent = indicator.title;
                     indicatorDescription.innerHTML = `<p>${indicator.description}</p>`;
                     indicatorFormula.textContent = indicator.formula;
                     indicatorFormula.style.display = 'block';
+                    
+                    // Configurar señal
+                    let signalClass = 'signal-neutral';
+                    let signalText = indicator.signal;
+                    
+                    if (indicator.signal.includes('Compra') || indicator.signal.includes('Alcista')) {
+                        signalClass = 'signal-buy';
+                    } else if (indicator.signal.includes('Venta') || indicator.signal.includes('Bajista')) {
+                        signalClass = 'signal-sell';
+                    }
+                    
+                    indicatorSignal.innerHTML = `<strong>Señal Actual:</strong> ${signalText}`;
+                    indicatorSignal.className = `indicator-signal ${signalClass}`;
+                    indicatorSignal.style.display = 'block';
                     
                     // Configurar parámetros
                     if (indicator.params.length > 0) {
@@ -455,13 +811,34 @@
                                        ${param.step ? `step="${param.step}"` : ''}>
                             `;
                             indicatorParams.appendChild(inputGroup);
+                            
+                            // Agregar evento para actualizar en tiempo real
+                            const input = inputGroup.querySelector('input');
+                            input.addEventListener('change', function() {
+                                const params = {};
+                                indicator.params.forEach(p => {
+                                    const inputEl = document.getElementById(p.name);
+                                    params[p.name] = parseFloat(inputEl.value);
+                                });
+                                updateChartWithIndicator(selectedIndicator, params);
+                            });
                         });
                         indicatorParams.style.display = 'grid';
+                        
+                        // Aplicar indicador con parámetros por defecto
+                        const params = {};
+                        indicator.params.forEach(p => {
+                            params[p.name] = p.value;
+                        });
+                        updateChartWithIndicator(selectedIndicator, params);
                     } else {
                         indicatorParams.style.display = 'none';
+                        updateChartWithIndicator(selectedIndicator, {});
                     }
                 }
-            });
+            }
+            
+            indicatorSelector.addEventListener('change', applyIndicator);
             
             // Manejo de los botones de timeframe
             const timeframeButtons = document.querySelectorAll('.timeframe-btn');
@@ -469,7 +846,10 @@
                 button.addEventListener('click', function() {
                     timeframeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-                    // Aquí iría la lógica para cambiar el timeframe del gráfico
+                    
+                    // En una implementación real, aquí se cargarían nuevos datos según el timeframe
+                    const timeframe = this.getAttribute('data-timeframe');
+                    console.log(`Cambiando a timeframe: ${timeframe}`);
                 });
             });
             
@@ -478,20 +858,19 @@
             const audioStatus = document.getElementById('audioStatus');
             
             audioControl.addEventListener('click', function() {
-                // En una implementación real, aquí se integraría con una API de síntesis de voz
-                // Por ahora simulamos la funcionalidad
                 audioStatus.textContent = "Reproduciendo explicación...";
+                audioControl.disabled = true;
                 
+                // Simular tiempo de explicación
                 setTimeout(() => {
                     audioStatus.textContent = "Explicación completada";
-                }, 3000);
+                    audioControl.disabled = false;
+                }, 5000);
             });
             
-            // Simulación de datos en tiempo real
-            setInterval(() => {
-                // En una implementación real, aquí se actualizarían los datos del gráfico
-                // con información en tiempo real desde una API
-            }, 5000);
+            // Inicializar con un indicador por defecto
+            indicatorSelector.value = 'sma';
+            applyIndicator();
         });
     </script>
 </body>
